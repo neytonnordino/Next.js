@@ -4,7 +4,7 @@ import Image from "next/image";
 
 function Header() {
   return (
-    <header className="bg-neutral-800 py-6 border-b-1 border-neutral-700 ">
+    <header className="bg-neutral-800 py-1 border-b-1 border-white/3 ">
       <div className=" flex justify-between items-center w-full text-white px-3">
         <svg
           width="24"
@@ -33,8 +33,8 @@ function Header() {
             strokeLinecap="round"
           />
         </svg>
-        <div className="flex gap-2 items-center">
-          <h2 className="text-xl md:text-2xl text-white">Cláudio</h2>
+        <button className="flex gap-2 items-center cursor-pointer hover:bg-white/10 group  p-2 rounded-md transition">
+          <h2 className="text-xl md:text-2xl text-white  transition ">Cláudio</h2>
           <svg
             width="20"
             height="21"
@@ -48,7 +48,7 @@ function Header() {
               fill="#ffffffa4"
             />
           </svg>
-        </div>
+        </button>
         <svg
           width="24"
           height="24"
@@ -80,8 +80,8 @@ function Header() {
           />
         </svg>
 
-        <div className="hidden lg:flex items-center gap-2">
-          <div className="flex gap-2 items-center">
+        <div className="hidden lg:flex items-center gap-2 ">
+          <div className="flex gap-2 items-center cursor-pointer hover:bg-white/10  p-2 rounded-md transition">
             {/* upload icon */}
             <svg
               width="24"
@@ -114,27 +114,33 @@ function Header() {
             <h3 className="font-medium">Partilhar</h3>
           </div>
 
-          {/* three dots icon */}
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="5" cy="12" r="1.5" fill="currentColor" />
-            <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-            <circle cx="19" cy="12" r="1.5" fill="currentColor" />
-          </svg>
-          <Avatar>
-            <Image
-              src="/avatar.jpeg"
-              alt="Avatar icon"
-              width={40}
-              height={40}
-              className="rouned-full"
-            />
-          </Avatar>
+          <div className="flex gap-4 items-center">
+            {/* three dots icon */}
+            <div className="p-2 cursor-pointer hover:bg-white/10 rounded-md transition">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="5" cy="12" r="1.5" fill="currentColor" />
+                <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                <circle cx="19" cy="12" r="1.5" fill="currentColor" />
+              </svg>
+            </div>
+            <div className="hover:bg-white/10 rounded-full transition p-2">
+              <Avatar>
+                <Image
+                  src="/avatar.jpeg"
+                  alt="Avatar icon"
+                  width={40}
+                  height={40}
+                  className="rouned-full  "
+                />
+              </Avatar>
+            </div>
+          </div>
         </div>
       </div>
     </header>

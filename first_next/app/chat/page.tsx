@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Header from "../components/Header";
+import SideBar from "../components/SideBar";
 
 export default function ChatPage() {
   const [userName, setUserName] = useState("");
@@ -61,10 +62,16 @@ export default function ChatPage() {
   }
   return (
     <>
-      <Header/>
-      <main className="w-full h-screen bg-neutral-800">
-      <h1>hello {userName}, o que posso fazer por ti hoje?</h1>
-      </main>
+      <div className="flex h-screen">
+        <div className="w-xs bg-neutral-900 hidden md:block"><SideBar/></div>
+        <div className="flex-1 flex flex-col">
+          <Header/>
+          <main className="w-full h-screen bg-neutral-800">
+          
+          <h1>hello {userName}, o que posso fazer por ti hoje?</h1>
+          </main>
+        </div>
+      </div>
       
     </>
   );
