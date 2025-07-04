@@ -68,7 +68,7 @@ export default function ChatPage() {
           <Header/>
           <main className="w-full h-screen bg-neutral-800">
           
-          <h1>hello {userName}, o que posso fazer por ti hoje?</h1>
+          <h1 className="">Hello {userName}, o que posso fazer por ti hoje?</h1>
           </main>
         </div>
       </div>
