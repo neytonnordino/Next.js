@@ -1,10 +1,11 @@
 import React from "react";
 import Avatar from "./Avatar";
 import Image from "next/image";
+import Link from "next/link";
 
 function Header() {
   return (
-    <header className="bg-neutral-800 py-1 border-b-1 border-white/3 ">
+    <header className="bg-[#212121] py-1 border-b-1 border-white/3 ">
       <div className=" flex justify-between items-center w-full text-white px-3">
         <svg
           width="24"
@@ -34,7 +35,9 @@ function Header() {
           />
         </svg>
         <button className="flex gap-2 items-center cursor-pointer hover:bg-white/10 group  p-2 rounded-md transition">
-          <h2 className="text-xl md:text-2xl text-white  transition ">Cláudio</h2>
+          <h2 className="text-xl md:text-2xl text-white  transition ">
+            Cláudio
+          </h2>
           <svg
             width="20"
             height="21"
@@ -140,6 +143,9 @@ function Header() {
                 />
               </Avatar>
             </div>
+            <button>
+              <Link href="/signin">SignIn</Link>
+            </button>
           </div>
         </div>
       </div>
