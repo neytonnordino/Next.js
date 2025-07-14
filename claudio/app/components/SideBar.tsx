@@ -12,10 +12,13 @@ type SideBarProps = {
 const SideBar = ({ isOpen, toggleSideBar }: SideBarProps) => {
   return (
     <aside
-      className={`relative text-gray-200 scrollbar overflow-y-scroll overflow-hidden h-screen bg-neutral-900 transition-all duration-300
-      ${isOpen ? "w-72 px-3" : "w-0 px-0 overflow-hidden"} 
-      md:block hidden tracking-wider`}
+      className={`fixed top-0 left-0 z-50 lg:relative text-gray-200 scrollbar overflow-y-scroll overflow-hidden h-screen bg-neutral-900 transition-all duration-300
+      ${isOpen ? "w-64 md:w-72 px-3" : "w-0 px-0 overflow-hidden"} 
+      md:block tracking-wider `}
     >
+      {/* Backdrop escuro */}
+      
+
       <header className="sticky top-0 left-0 w-full z-40 ">
         <div className="flex justify-between bg-neutral-900 items-center text-white py-6 ">
           <Link href="/">
@@ -37,8 +40,8 @@ const SideBar = ({ isOpen, toggleSideBar }: SideBarProps) => {
           </button>
         </div>
       </header>
-      <div className="flex flex-col gap-12 overflow-hidden">
-        <NewChat/>
+      <div className="flex flex-col gap-12 overflow-hidden z-30">
+        <NewChat />
         <div className="">
           {Array.from({ length: 100 }).map((_, i) => (
             <p key={i} className="text-white">

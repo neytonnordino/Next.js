@@ -31,7 +31,7 @@ const chatData = [
 ];
 
 type sideBarProps = {
-  sideBar: boolean;
+  sideBar?: boolean;
 };
 
 const ChatHelp = ({ sideBar }: sideBarProps) => {

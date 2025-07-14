@@ -1,5 +1,36 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Authentication Setup
+
+This project uses NextAuth.js for authentication with Google and GitHub providers. To get authentication working:
+
+1. Create a `.env.local` file in the root directory with the following variables:
+
+```bash
+# NextAuth Configuration
+AUTH_SECRET=your-secret-key-here-make-it-long-and-random
+
+# Google OAuth
+AUTH_GOOGLE_ID=your-google-client-id
+AUTH_GOOGLE_SECRET=your-google-client-secret
+
+# GitHub OAuth
+AUTH_GITHUB_ID=your-github-client-id
+AUTH_GITHUB_SECRET=your-github-client-secret
+
+# NextAuth URL (for development)
+NEXTAUTH_URL=http://localhost:3000
+```
+
+2. Set up OAuth applications:
+
+   - **Google**: Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → Create OAuth 2.0 Client ID
+   - **GitHub**: Go to [GitHub Settings](https://github.com/settings/developers) → OAuth Apps → New OAuth App
+
+3. For the redirect URIs, use:
+   - `http://localhost:3000/api/auth/callback/google` (for Google)
+   - `http://localhost:3000/api/auth/callback/github` (for GitHub)
+
 ## Getting Started
 
 First, run the development server:

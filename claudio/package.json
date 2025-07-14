@@ -10,10 +10,13 @@
   },
   "dependencies": {
     "firebase": "^11.10.0",
+    "firebase-admin": "^13.4.0",
     "next": "15.3.4",
     "next-auth": "^5.0.0-beta.29",
+    "openai": "^5.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "tailwind-merge": "^3.3.1"
   },

@@ -1,39 +1,55 @@
+"use client";
+
 import React from "react";
 import Avatar from "./Avatar";
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { FaRegUser } from "react-icons/fa";
+import LogOut from "./LogOut";
 
-function Header() {
+type SideBarProps = {
+  isOpen?: boolean;
+  toggleSideBar?: () => void;
+};
+
+function Header({ isOpen, toggleSideBar }: SideBarProps) {
+  const { data: session } = useSession();
+
   return (
-    <header className="bg-[#212121] py-1 border-b-1 border-white/3 ">
-      <div className=" flex justify-between items-center w-full text-white px-3">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="lg:hidden"
+    <header className="bg-[#212121] py-1 border-b-1 border-white/3 w-full z-10 absolute top-0 left-0 right-0">
+      <div className="flex justify-between items-center w-full text-white px-3">
+        <button
+          onClick={toggleSideBar}
+          className={`lg:hidden ${isOpen ? "hidden" : "block"}`}
         >
-          <line
-            x1="4"
-            y1="8"
-            x2="20"
-            y2="8"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="4"
-            y1="16"
-            x2="14"
-            y2="16"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <line
+              x1="4"
+              y1="8"
+              x2="20"
+              y2="8"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <line
+              x1="4"
+              y1="16"
+              x2="14"
+              y2="16"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
         <button className="flex gap-2 items-center cursor-pointer hover:bg-white/10 group  p-2 rounded-md transition">
           <h2 className="text-xl md:text-2xl text-white  transition ">
             Cláudio
@@ -132,20 +148,28 @@ function Header() {
                 <circle cx="19" cy="12" r="1.5" fill="currentColor" />
               </svg>
             </div>
-            <div className="hover:bg-white/10 rounded-full transition p-2">
-              <Avatar>
-                <Image
-                  src="/avatar.jpeg"
-                  alt="Avatar icon"
-                  width={40}
-                  height={40}
-                  className="rouned-full  "
-                />
-              </Avatar>
-            </div>
-            <button>
+            {session?.user ? (
+              <>
+                <div className="hover:bg-white/10 rounded-full transition p-2">
+                  <Avatar className="">
+                    {session?.user?.image ? (
+                      <Image
+                        src={session.user.image}
+                        alt="Avatar icon"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <FaRegUser className="text-24" />
+                    )}
+                  </Avatar>
+                </div>
+                <LogOut />
+              </>
+            ) : (
               <Link href="/signin">SignIn</Link>
-            </button>
+            )}
           </div>
         </div>
       </div>
