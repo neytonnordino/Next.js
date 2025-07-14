@@ -15,7 +15,7 @@ export default function ClientLayout({
   children,
   className,
 }: clientLayoutProps) {
-  const [isSideBarOpen, setIsSidebarOpen] = useState(false);
+  const [isSideBarOpen, setIsSidebarOpen] = useState(true);
   const { userName, setUserName } = useUser();
 
   function handleSubmit(formData: FormData) {

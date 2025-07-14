@@ -1,15 +1,38 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { TbLayoutSidebar } from "react-icons/tb";
 import NewChat from "./NewChat";
+import { useSession } from "next-auth/react";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { collection, orderBy, query } from "firebase/firestore";
+import { db } from "@/firebase";
+import { useRouter } from "next/navigation";
+import LoadingDot from "./LoadingDot";
+import ChatRow from "./ChatRow";
 
 type SideBarProps = {
   isOpen: boolean;
   toggleSideBar: () => void;
 };
 const SideBar = ({ isOpen, toggleSideBar }: SideBarProps) => {
+  const { data: session } = useSession();
+  const [chats, loading] = useCollection(
+    session &&
+      query(
+        collection(db, "users", session?.user?.email as string, "chats"),
+        orderBy("createdAt", "asc")
+      )
+  );
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!chats) {
+      router?.push("/");
+    }
+  }, [chats, router]);
   return (
     <aside
       className={`fixed top-0 left-0 z-50 lg:relative text-gray-200 scrollbar overflow-y-scroll overflow-hidden h-screen bg-neutral-900 transition-all duration-300
@@ -17,7 +40,6 @@ const SideBar = ({ isOpen, toggleSideBar }: SideBarProps) => {
       md:block tracking-wider `}
     >
       {/* Backdrop escuro */}
-      
 
       <header className="sticky top-0 left-0 w-full z-40 ">
         <div className="flex justify-between bg-neutral-900 items-center text-white py-6 ">
@@ -40,14 +62,27 @@ const SideBar = ({ isOpen, toggleSideBar }: SideBarProps) => {
           </button>
         </div>
       </header>
-      <div className="flex flex-col gap-12 overflow-hidden z-30">
+      <div className="flex flex-col gap-3 overflow-hidden z-30">
         <NewChat />
-        <div className="">
-          {Array.from({ length: 100 }).map((_, i) => (
-            <p key={i} className="text-white">
-              Linha {i + 1}
-            </p>
-          ))}
+        <div className="hidden md:inline-flex px-2">SelectionModel</div>
+        <div>
+          {session?.user ? (
+            <>
+              <p className="text-neutral-400 font-medium text-sm px-2 mt-2">Chats</p>
+              <div>
+                {!loading ? <div className="flex items-center p-2"><LoadingDot/></div> : chats?.docs.length ? (chats?.docs?.map((chat) => (
+                  <ChatRow key={chat.id} id={chat?.id}/>
+                ))): <div className="py-8 text-center">
+                  <p className="text-sm text-muted-foreground">No chat history</p>
+                  </div>}
+              </div>
+            </>
+          ) : (
+            !loading && <div>
+              <p>Sign in to view history</p>
+              <Link href={"/signin"} className="text-xs hover:text-white duration-300 mt-2 underline decoration-[1px]">Sign in</Link>
+            </div>
+          )}
         </div>
       </div>
     </aside>

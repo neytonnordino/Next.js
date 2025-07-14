@@ -129,11 +129,11 @@ const ChatInput = ({ chatId }: ChatInputProps) => {
           </svg>
         </button>
       </form>
-      {loading && (
+      {/* {loading && (
         <div className="flex h-screen w-screen items-center justify-center">
           <LoadingDot />
         </div>
-      )}
+      )} */}
     </>
   );
 };
