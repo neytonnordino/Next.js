@@ -51,7 +51,7 @@ const ChatInput = ({ chatId }: ChatInputProps) => {
           collection(db, "users", userEmail, "chats"),
           {
             userId: userEmail,
-            createAt: serverTimestamp(),
+            createdAt: serverTimestamp(),
           }
         );
         chatDocument = docRef.id;

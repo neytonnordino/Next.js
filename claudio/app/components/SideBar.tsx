@@ -17,22 +17,23 @@ type SideBarProps = {
   toggleSideBar: () => void;
 };
 const SideBar = ({ isOpen, toggleSideBar }: SideBarProps) => {
-  const { data: session } = useSession();
-  const [chats, loading] = useCollection(
-    session &&
-      query(
-        collection(db, "users", session?.user?.email as string, "chats"),
+  const { data: session, status } = useSession();
+  const userEmail = session?.user?.email;
+  const chatQuery = userEmail
+    ? query(
+        collection(db, "users", userEmail, "chats"),
         orderBy("createdAt", "asc")
       )
-  );
-
+    : undefined;
+  const [chats, loading] = useCollection(chatQuery);
   const router = useRouter();
 
   useEffect(() => {
-    if (!chats) {
+    if (session && !loading && !chats) {
       router?.push("/");
     }
-  }, [chats, router]);
+  }, [session, loading, chats, router]);
+
   return (
     <aside
       className={`fixed top-0 left-0 z-50 lg:relative text-gray-200 scrollbar overflow-y-scroll overflow-hidden h-screen bg-neutral-900 transition-all duration-300
@@ -68,20 +69,46 @@ const SideBar = ({ isOpen, toggleSideBar }: SideBarProps) => {
         <div>
           {session?.user ? (
             <>
-              <p className="text-neutral-400 font-medium text-sm px-2 mt-2">Chats</p>
+              <p className="text-neutral-400 font-medium text-sm px-2 mt-2">
+                Chats
+              </p>
               <div>
-                {!loading ? <div className="flex items-center p-2"><LoadingDot/></div> : chats?.docs.length ? (chats?.docs?.map((chat) => (
-                  <ChatRow key={chat.id} id={chat?.id}/>
-                ))): <div className="py-8 text-center">
-                  <p className="text-sm text-muted-foreground">No chat history</p>
-                  </div>}
+                {loading ? (
+                  <div className="flex flex-col flex-1 space-y-2 overflow-auto py-2">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-full h-8 rounded-md shrink-0 animate-pulse bg-zinc-800"
+                      />
+                    ))}
+                  </div>
+                ) : chats?.docs?.length ? (
+                  chats?.docs?.map((chat) => (
+                    <ChatRow key={chat.id} id={chat?.id} />
+                  ))
+                ) : (
+                  status === "authenticated" && (
+                    <div className="py-8 text-center">
+                      <p className="text-sm text-muted-foreground">
+                        No chat history
+                      </p>
+                    </div>
+                  )
+                )}
               </div>
             </>
           ) : (
-            !loading && <div>
-              <p>Sign in to view history</p>
-              <Link href={"/signin"} className="text-xs hover:text-white duration-300 mt-2 underline decoration-[1px]">Sign in</Link>
-            </div>
+            !loading && (
+              <div>
+                <p>Sign in to view history</p>
+                <Link
+                  href={"/signin"}
+                  className="text-xs hover:text-white duration-300 mt-2 underline decoration-[1px]"
+                >
+                  Sign in
+                </Link>
+              </div>
+            )
           )}
         </div>
       </div>
