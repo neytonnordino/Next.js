@@ -1,4 +1,7 @@
+import admin from "firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
+import query from "@/app/lib/queryApi";
+import { adminDB } from "@/firebaseAdmin";
 
 export const POST = async (req: NextRequest) => {
   const reqBody = await req.json();
@@ -22,8 +25,29 @@ export const POST = async (req: NextRequest) => {
         { status: 400 }
       );
     }
+    const response = await query(prompt, id, model);
+
+    const message = {
+      text: response || "Claudio was unable to find an answer for that!",
+      createAt: admin.firestore.Timestamp.now(),
+      user: {
+        _id: "Claudio",
+        name: "Claudio",
+        avatar: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png",
+      },
+    };
+
+    await adminDB
+      .collection("users")
+      .doc(session)
+      .collection("chats")
+      .doc(id)
+      .collection("messages")
+      .add(message);
+
     return NextResponse.json(
       {
+        answer: message?.text,
         success: true,
         message: "API is connected",
       },

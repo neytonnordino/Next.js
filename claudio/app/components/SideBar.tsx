@@ -11,6 +11,7 @@ import { db } from "@/firebase";
 import { useRouter } from "next/navigation";
 import LoadingDot from "./LoadingDot";
 import ChatRow from "./ChatRow";
+import { SidebarSkeleton } from "./Skeleton";
 
 type SideBarProps = {
   isOpen: boolean;
@@ -74,14 +75,7 @@ const SideBar = ({ isOpen, toggleSideBar }: SideBarProps) => {
               </p>
               <div>
                 {loading ? (
-                  <div className="flex flex-col flex-1 space-y-2 overflow-auto py-2">
-                    {Array.from({ length: 10 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-full h-8 rounded-md shrink-0 animate-pulse bg-zinc-800"
-                      />
-                    ))}
-                  </div>
+                  <SidebarSkeleton />
                 ) : chats?.docs?.length ? (
                   chats?.docs?.map((chat) => (
                     <ChatRow key={chat.id} id={chat?.id} />

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header";
 import SideBar from "./SideBar";
 import { TbLayoutSidebar } from "react-icons/tb";
 import { useUser } from "../contexts/UserContext";
+import AppSkeleton from "./AppSkeleton";
 
 type clientLayoutProps = {
   children: React.ReactNode;
@@ -16,21 +17,41 @@ export default function ClientLayout({
   className,
 }: clientLayoutProps) {
   const [isSideBarOpen, setIsSidebarOpen] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { userName, setUserName } = useUser();
 
-  function handleSubmit(formData: FormData) {
+  useEffect(() => {
+    // Simulate loading time for app initialization
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setIsLoaded(true);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     const input = formData.get("name");
     if (typeof input === "string") {
       const trimmed = input.trim();
       setUserName(trimmed);
     }
   }
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return <AppSkeleton />;
+  }
+
   if (!userName) {
     return (
       <>
         <div className="w-full h-screen flex items-end md:items-center justify-center bg-[#212121] ">
           <form
-            action={handleSubmit}
+            onSubmit={handleSubmit}
             className="bg-[#292929] p-6 rounded-4xl shadow-md w-full md:min-w-2xl md:w-auto m-2 md:m-0 mb-4"
           >
             <label className="block font-medium mb-2 text-center text-2xl md:text-4xl text-white/90">
@@ -71,7 +92,11 @@ export default function ClientLayout({
   }
   return (
     <div className="flex h-screen w-full bg-[#212121] text-white">
-      <div>
+      <div
+        className={`transition-all duration-600 ${
+          isLoaded ? "slide-up-animation" : "opacity-0 translate-y-10"
+        }`}
+      >
         <SideBar
           isOpen={isSideBarOpen}
           toggleSideBar={() => setIsSidebarOpen((prev) => !prev)}
@@ -83,7 +108,11 @@ export default function ClientLayout({
           />
         )}
       </div>
-      <div className="py-4 hidden lg:block overflow-hidden">
+      <div
+        className={`py-4 hidden lg:block overflow-hidden transition-all duration-600 ${
+          isLoaded ? "slide-up-animation-delay-1" : "opacity-0 translate-y-10"
+        }`}
+      >
         <button
           onClick={() => setIsSidebarOpen((prev) => !prev)}
           className="rounded-xl overflow-hidden cursor-e-resize p-2 hover:bg-neutral-600 transition"
@@ -97,12 +126,24 @@ export default function ClientLayout({
       </div>
 
       <div className="h-screen flex-1 relative">
-        <Header
-          isOpen={isSideBarOpen}
-          toggleSideBar={() => setIsSidebarOpen((prev) => !prev)}
-        />
+        <div
+          className={`transition-all duration-600 ${
+            isLoaded ? "slide-up-animation-delay-2" : "opacity-0 translate-y-10"
+          }`}
+        >
+          <Header
+            isOpen={isSideBarOpen}
+            toggleSideBar={() => setIsSidebarOpen((prev) => !prev)}
+          />
+        </div>
 
-        <main className="h-full pt-14">{children}</main>
+        <main
+          className={`h-full transition-all duration-600 ${
+            isLoaded ? "slide-up-animation-delay-3" : "opacity-0 translate-y-10"
+          }`}
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

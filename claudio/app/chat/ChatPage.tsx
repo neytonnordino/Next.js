@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChatMessage from "../components/ChatMessage";
 import ChatHelp from "../components/ChatHelp";
 import { useUser } from "../contexts/UserContext";
 import ChatInput from "../components/ChatInput";
+import ChatPageSkeleton from "../components/ChatPageSkeleton";
 
 type Message = {
   sender: "user" | "ai";
@@ -14,11 +15,32 @@ type Message = {
 function ChatPage() {
   const { userName } = useUser();
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time for user data and initial setup
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setIsLoaded(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return <ChatPageSkeleton />;
+  }
 
   return (
     <>
-      <main className="h-full  ">
-        <div className="max-w-2xl mx-auto h-full flex flex-col gap-12 justify-end md:justify-center py-2">
+      <main className="h-full">
+        <div
+          className={`max-w-2xl mx-auto h-full flex flex-col gap-12 justify-end md:justify-center py-2 transition-all duration-600 ${
+            isLoaded ? "slide-up-animation-delay-3" : "opacity-0 translate-y-10"
+          }`}
+        >
           <h1 className=" text-xl md:text-3xl text-center">
             Olá {userName}, o que posso fazer por ti hoje?
           </h1>
@@ -29,7 +51,7 @@ function ChatPage() {
           </div>
           <div className="flex flex-col gap-12">
             <div className="flex flex-col gap-6">
-              <ChatInput chatId=""/>
+              <ChatInput chatId="" />
               <ChatHelp />
             </div>
             <p className="text-center py-2">

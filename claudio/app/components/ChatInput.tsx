@@ -5,7 +5,6 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import toast from "react-hot-toast";
 import { FaRegUser } from "react-icons/fa";
 import { TbPaperclip } from "react-icons/tb";
 import LoadingDot from "./LoadingDot";
@@ -17,6 +16,7 @@ type ChatInputProps = {
 const ChatInput = ({ chatId }: ChatInputProps) => {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const router = useRouter();
   const model = "gpt-4-turbo";
   const userEmail = session?.user
@@ -24,6 +24,7 @@ const ChatInput = ({ chatId }: ChatInputProps) => {
     : "unknown";
   const userName = session?.user ? (session?.user?.email as string) : "unknown";
   const [prompt, setPrompt] = useState("");
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!prompt) return; //veriifica se o input está vazio, caso esteja, salta a função/não executa nada
@@ -45,13 +46,21 @@ const ChatInput = ({ chatId }: ChatInputProps) => {
 
     try {
       setLoading(true);
+      setIsSending(true);
+
+      // Animate the button and clear input
+      setTimeout(() => {
+        setPrompt("");
+        setIsSending(false);
+      }, 200);
+
       let chatDocument = chatId;
       if (!chatId) {
         const docRef = await addDoc(
           collection(db, "users", userEmail, "chats"),
           {
             userId: userEmail,
-            createdAt: serverTimestamp(),
+            createAt: serverTimestamp(),
           }
         );
         chatDocument = docRef.id;
@@ -62,9 +71,6 @@ const ChatInput = ({ chatId }: ChatInputProps) => {
         collection(db, "users", userEmail, "chats", chatDocument, "messages"),
         message
       );
-      setPrompt("");
-
-      const notification = toast.loading("ChatGPT is thinking");
 
       await fetch("api/askchat", {
         method: "POST",
@@ -79,23 +85,17 @@ const ChatInput = ({ chatId }: ChatInputProps) => {
         }),
       }).then(async (res) => {
         const data = await res.json();
-        if (data.success) {
-          toast.success(data?.message, {
-            id: notification,
-          });
-        } else {
-          toast.error(data?.message, {
-            id: notification,
-          });
+        if (!data.success) {
+          console.error("API Error:", data?.message);
         }
       });
     } catch (error) {
       console.error("Error sending message:", error);
-      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <>
       <form
@@ -106,34 +106,46 @@ const ChatInput = ({ chatId }: ChatInputProps) => {
         <input
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          className="flex-1 px-2 text-white/70 text-base sm:text-xl md:text-2xl outline-none bg-transparent"
+          className="flex-1 px-2 text-white/70 text-base sm:text-xl md:text-2xl outline-none bg-transparent transition-all duration-300"
           placeholder="Pergunte qualquer coisa"
         />
         <button
-          disabled={!prompt}
+          disabled={!prompt || loading}
           type="submit"
-          className="bg-white/90 text-black p-2 rounded-full hover:bg-neutral-500 hover:text-neutral-100 transition"
+          className={`bg-white/90 text-black p-2 rounded-full hover:bg-neutral-500 hover:text-neutral-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+            isSending ? "scale-95" : "scale-100"
+          }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="12" y1="19" x2="12" y2="5" />
-            <polyline points="5 12 12 5 19 12" />
-          </svg>
+          {loading ? (
+            <LoadingDot size="sm" color="gray" />
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`transition-transform duration-200 ${
+                isSending ? "rotate-12" : "rotate-0"
+              }`}
+            >
+              <line x1="12" y1="19" x2="12" y2="5" />
+              <polyline points="5 12 12 5 19 12" />
+            </svg>
+          )}
         </button>
       </form>
-      {/* {loading && (
-        <div className="flex h-screen w-screen items-center justify-center">
-          <LoadingDot />
+      {loading && (
+        <div className="flex items-center justify-center py-4">
+          <div className="flex items-center gap-3 text-white/70">
+            <LoadingDot size="md" color="white" />
+            <span className="text-sm">Claudio está pensando...</span>
+          </div>
         </div>
-      )} */}
+      )}
     </>
   );
 };
